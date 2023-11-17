@@ -3,17 +3,44 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-    
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="jdbcUrl" value="jdbc:postgresql://localhost:5432/employees"/>
+        <property name="username" value="postgres"/>
+        <property name="password" value="password"/>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan" value="dev.buga.entity" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">create</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean name="departmentDao" class="dev.buga.data.GenericDAOImpl">
         <constructor-arg value="dev.buga.entity.Department"/>
+        <constructor-arg ref="sessionFactory"/>
     </bean>
 
     <bean name="employeeDao" class="dev.buga.data.GenericDAOImpl">
         <constructor-arg value="dev.buga.entity.Employee"/>
+        <constructor-arg ref="sessionFactory"/>
     </bean>
 
     <bean name="projectDao" class="dev.buga.data.GenericDAOImpl">
         <constructor-arg value="dev.buga.entity.Project"/>
+        <constructor-arg ref="sessionFactory"/>
     </bean>
 
 </beans>
