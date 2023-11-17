@@ -1,16 +1,16 @@
 package dev.buga.data;
 
-import dev.buga.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 public class GenericDAOImpl<T> implements GenericDAO<T> {
     private final Class<T> type;
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final SessionFactory sessionFactory;
 
-    public GenericDAOImpl(Class<T> type) {
+    public GenericDAOImpl(Class<T> type, SessionFactory sessionFactory) {
         this.type = type;
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
@@ -21,10 +21,7 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
                 session.persist(t);
                 transaction.commit();
             } catch (Exception e) {
-                if (transaction != null && transaction.isActive()) {
-                    transaction.rollback();
-                }
-                e.printStackTrace();
+                handleException(e, transaction);
             }
         }
     }
@@ -38,10 +35,7 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
                 t = session.get(type, id);
                 transaction.commit();
             } catch (Exception e) {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                e.printStackTrace();
+                handleException(e, transaction);
             }
             return t;
         }
@@ -55,10 +49,7 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
                 session.merge(t);
                 transaction.commit();
             } catch (Exception e) {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                e.printStackTrace();
+                handleException(e, transaction);
             }
         }
     }
@@ -73,11 +64,16 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
                     session.remove(t);
                 }
             } catch (Exception e) {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                e.printStackTrace();
+                handleException(e, transaction);
             }
         }
     }
+
+    private static void handleException(Exception e, Transaction transaction) {
+        if (transaction != null && transaction.isActive()) {
+            transaction.rollback();
+        }
+        e.printStackTrace();
+    }
+
 }
