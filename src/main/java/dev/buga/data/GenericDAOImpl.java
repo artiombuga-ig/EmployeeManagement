@@ -3,14 +3,21 @@ package dev.buga.data;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 public class GenericDAOImpl<T> implements GenericDAO<T> {
     private final Class<T> type;
+    private final LocalSessionFactoryBean sessionFactoryBean;
     private final SessionFactory sessionFactory;
 
-    public GenericDAOImpl(Class<T> type, SessionFactory sessionFactory) {
+    public GenericDAOImpl(Class<T> type, LocalSessionFactoryBean sessionFactoryBean) {
         this.type = type;
-        this.sessionFactory = sessionFactory;
+        this.sessionFactoryBean = sessionFactoryBean;
+        this.sessionFactory = getSessionFactory();
+    }
+
+    private SessionFactory getSessionFactory() {
+        return sessionFactoryBean.getObject();
     }
 
     @Override
