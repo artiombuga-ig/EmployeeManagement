@@ -22,18 +22,18 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 public class AppConfig {
 
     @Bean
-    GenericDAO<Department> departmentDao(@Qualifier("sessionFactory") LocalSessionFactoryBean sessionFactory) {
-        return new GenericDAOImpl<>(Department.class, sessionFactory);
+    GenericDAO<Department> departmentDao() {
+        return new GenericDAOImpl<>(Department.class);
     }
 
     @Bean
-    GenericDAO<Employee> employeeDao(@Qualifier("sessionFactory") LocalSessionFactoryBean sessionFactory) {
-        return new GenericDAOImpl<>(Employee.class, sessionFactory);
+    GenericDAO<Employee> employeeDao() {
+        return new GenericDAOImpl<>(Employee.class);
     }
 
     @Bean
-    GenericDAO<Project> projectDao(@Qualifier("sessionFactory") LocalSessionFactoryBean sessionFactory) {
-        return new GenericDAOImpl<>(Project.class, sessionFactory);
+    GenericDAO<Project> projectDao() {
+        return new GenericDAOImpl<>(Project.class);
     }
 
 }

@@ -2,11 +2,14 @@ package dev.buga.service;
 
 import dev.buga.data.GenericDAO;
 import dev.buga.entity.Project;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.awt.event.TextEvent;
 import java.util.List;
 
 @Service
@@ -35,31 +38,16 @@ public class ProjectService {
 
     public void remove(long id) {
         Project project = readById(id);
-        SessionFactory sessionFactory = projectDAO.requestSessionFactory();
+        EntityManager entityManager = projectDAO.getEntityManager();
 
         if (project != null) {
-            try (Session session = sessionFactory.openSession()) {
-                Transaction transaction = null;
 
-                try {
-                    transaction = session.beginTransaction();
+            String sql = "DELETE FROM employee_project WHERE project_id = :projectId";
+            entityManager.createNativeQuery(sql)
+                    .setParameter("projectId", id)
+                    .executeUpdate();
 
-                    String sql = "DELETE FROM employee_project WHERE project_id = :projectId";
-                    session.createNativeQuery(sql)
-                            .setParameter("projectId", id)
-                            .executeUpdate();
-
-                    transaction.commit();
-
-                    projectDAO.delete(id);
-                } catch (Exception e) {
-                    if (transaction != null) {
-                        transaction.rollback();
-                    }
-                    e.printStackTrace();
-                }
-            }
+            projectDAO.delete(id);
         }
     }
-
 }

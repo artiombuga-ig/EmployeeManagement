@@ -2,6 +2,8 @@ package dev.buga.service;
 
 import dev.buga.data.GenericDAO;
 import dev.buga.entity.Employee;
+import dev.buga.entity.Project;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -34,32 +36,17 @@ public class EmployeeService {
     }
 
     public void remove(Long id) {
-
         Employee employee = readById(id);
-        SessionFactory sessionFactory = employeeDAO.requestSessionFactory();
+        EntityManager entityManager = employeeDAO.getEntityManager();
 
         if (employee != null) {
-            try (Session session = sessionFactory.openSession()) {
-                Transaction transaction = null;
 
-                try {
-                    transaction = session.beginTransaction();
+        String sql = "UPDATE department SET manager_id = null WHERE manager_id = :employeeId";
+        entityManager.createNativeQuery(sql)
+                .setParameter("employeeId", id)
+                .executeUpdate();
 
-                    String sql = "UPDATE department SET manager_id = null WHERE manager_id = :employeeId";
-                    session.createNativeQuery(sql)
-                            .setParameter("employeeId", id)
-                            .executeUpdate();
-
-                    transaction.commit();
-
-                    employeeDAO.delete(id);
-                } catch (Exception e) {
-                    if (transaction != null) {
-                        transaction.rollback();
-                    }
-                    e.printStackTrace();
-                }
-            }
+        employeeDAO.delete(id);
         }
     }
 }
