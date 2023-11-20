@@ -22,13 +22,13 @@ public class HibernateConfig {
     @Value("${spring.datasource.driver-class-name}")
     private String driverClassName;
 
-    @Value("jdbc:postgresql://localhost:5432/employees")
+    @Value("${spring.datasource.url}")
     private String url;
 
-    @Value("postgres")
+    @Value("${spring.datasource.username}")
     private String username;
 
-    @Value("password")
+    @Value("${spring.datasource.password}")
     private String password;
 
     @Bean(name = "dataSource")
@@ -59,10 +59,9 @@ public class HibernateConfig {
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        properties.setProperty("hibernate.show_sql", "true");
-        properties.setProperty("hibernate.format_sql", "true");
-        properties.setProperty("hibernate.hbm2ddl.auto", "create");
+//        properties.setProperty("hibernate.show_sql", "true");
+//        properties.setProperty("hibernate.format_sql", "true");
+        properties.setProperty("hibernate.hbm2ddl.auto", "validate");
         return properties;
     }
 }

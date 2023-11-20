@@ -2,6 +2,7 @@ package dev.buga.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,10 +37,8 @@ public class Employee {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToMany (cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
+    @ManyToMany (cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.EAGER)
     @JoinTable(name = "employee_project",
     joinColumns = @JoinColumn(name = "employee_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id")
@@ -59,5 +58,24 @@ public class Employee {
     public void setDepartment(Department department) {
         this.department = department;
         department.getEmployees().add(this);
+    }
+
+    @Override
+    public String toString() {
+        if (department != null) {
+            return getClass().getSimpleName() + "(" +
+                    "id = " + id + ", " +
+                    "firstName = " + firstName + ", " +
+                    "lastName = " + lastName + ", " +
+                    "salary = " + salary + ", " +
+                    "department = " + department.getName() + ")";
+        }
+
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "firstName = " + firstName + ", " +
+                "lastName = " + lastName + ", " +
+                "salary = " + salary + ", " +
+                "department = " + department + ")";
     }
 }

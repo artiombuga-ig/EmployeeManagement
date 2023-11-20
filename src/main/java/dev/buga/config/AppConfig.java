@@ -5,6 +5,10 @@ import dev.buga.data.GenericDAOImpl;
 import dev.buga.entity.Department;
 import dev.buga.entity.Employee;
 import dev.buga.entity.Project;
+import dev.buga.service.DepartmentService;
+import dev.buga.service.EmployeeService;
+import dev.buga.service.ProjectService;
+import dev.buga.utility.UserInputHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +32,26 @@ public class AppConfig {
     @Bean
     GenericDAO<Project> projectDao(@Qualifier("sessionFactory") LocalSessionFactoryBean sessionFactory) {
         return new GenericDAOImpl<>(Project.class, sessionFactory);
+    }
+
+    @Bean
+    DepartmentService departmentService(GenericDAO<Department> departmentDao) {
+        return new DepartmentService(departmentDao);
+    }
+
+    @Bean
+    EmployeeService employeeService(GenericDAO<Employee> employeeDAO) {
+        return new EmployeeService(employeeDAO);
+    }
+
+    @Bean
+    ProjectService projectService(GenericDAO<Project> projectDao) {
+        return new ProjectService(projectDao);
+    }
+
+    @Bean
+    UserInputHandler userInputHandler(EmployeeService employeeService, DepartmentService departmentService, ProjectService projectService) {
+        return new UserInputHandler(employeeService, departmentService, projectService);
     }
 
 }

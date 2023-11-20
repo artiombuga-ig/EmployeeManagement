@@ -1,9 +1,13 @@
 package dev.buga.data;
 
+import lombok.Getter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+
+import org.hibernate.query.Query;
+import java.util.List;
 
 public class GenericDAOImpl<T> implements GenericDAO<T> {
     private final Class<T> type;
@@ -49,6 +53,24 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
     }
 
     @Override
+    public List<T> readAll() {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            List<T> resultList = null;
+            try {
+                String queryString = "FROM " + type.getName();
+                Query<T> query = session.createQuery(queryString, type);
+                resultList = query.getResultList();
+
+                transaction.commit();
+            } catch (Exception e) {
+                handleException(e, transaction);
+            }
+            return resultList;
+        }
+    }
+
+    @Override
     public void update(T t) {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -70,6 +92,7 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
                 if (t != null) {
                     session.remove(t);
                 }
+                transaction.commit();
             } catch (Exception e) {
                 handleException(e, transaction);
             }
@@ -81,6 +104,10 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
             transaction.rollback();
         }
         e.printStackTrace();
+    }
+
+    public SessionFactory requestSessionFactory() {
+        return this.sessionFactory;
     }
 
 }
