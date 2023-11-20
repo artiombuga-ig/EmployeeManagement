@@ -5,11 +5,11 @@ import dev.buga.entity.Project;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import org.springframework.stereotype.Service;
 
-import java.awt.event.TextEvent;
 import java.util.List;
 
+@Service
 public class ProjectService {
     private final GenericDAO<Project> projectDAO;
 

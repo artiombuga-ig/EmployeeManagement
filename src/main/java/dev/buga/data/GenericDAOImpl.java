@@ -1,19 +1,25 @@
 package dev.buga.data;
 
-import lombok.Getter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
+@Repository
+@Scope("prototype")
 public class GenericDAOImpl<T> implements GenericDAO<T> {
     private final Class<T> type;
     private final LocalSessionFactoryBean sessionFactoryBean;
     private final SessionFactory sessionFactory;
 
+    @Autowired
     public GenericDAOImpl(Class<T> type, LocalSessionFactoryBean sessionFactoryBean) {
         this.type = type;
         this.sessionFactoryBean = sessionFactoryBean;

@@ -6,10 +6,12 @@ import dev.buga.entity.Project;
 import dev.buga.service.DepartmentService;
 import dev.buga.service.EmployeeService;
 import dev.buga.service.ProjectService;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Scanner;
 
+@Component
 public class UserInputHandler {
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;

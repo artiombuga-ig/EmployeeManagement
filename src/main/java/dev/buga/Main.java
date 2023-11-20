@@ -10,10 +10,11 @@ import java.util.Scanner;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
-        UserInputHandler userInputHandler = context.getBean("userInputHandler", UserInputHandler.class);
+        UserInputHandler userInputHandler = context.getBean(UserInputHandler.class);
 
         System.out.println("Welcome to Buga Employee Management System");
         String userInput;
@@ -23,7 +24,7 @@ public class Main {
             System.out.println("2. Add Department");
             System.out.println("3. Add Project");
             System.out.println("4. Link Employee to Department");
-            System.out.println("5. Set Employee as Department Manager");
+            System.out.println("5. Link Employee to Department Manager");
             System.out.println("6. Link Employee to Project");
             System.out.println("7. Show Employees");
             System.out.println("8. Show Departments");

@@ -2,13 +2,14 @@ package dev.buga.service;
 
 import dev.buga.data.GenericDAO;
 import dev.buga.entity.Employee;
-import dev.buga.entity.Project;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class EmployeeService {
     private final GenericDAO<Employee> employeeDAO;
 
