@@ -107,7 +107,7 @@ public class UserInputHandler {
 
         long departmentId = (long) scanner.nextInt();
 
-        return departmentService.readById(departmentId);
+        return departmentService.readById(departmentId).get();
     }
 
     private Employee selectEmployee() {
@@ -116,7 +116,7 @@ public class UserInputHandler {
 
         long employeeId = (long) scanner.nextInt();
 
-        return employeeService.readById(employeeId);
+        return employeeService.readById(employeeId).get();
     }
 
     private Project selectProject() {
@@ -125,7 +125,7 @@ public class UserInputHandler {
 
         long projectId = (long) scanner.nextInt();
 
-        return projectService.readById(projectId);
+        return projectService.readById(projectId).get();
     }
 
     public void removeEmployee() {

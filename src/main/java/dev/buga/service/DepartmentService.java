@@ -1,53 +1,48 @@
 package dev.buga.service;
 
-import dev.buga.data.GenericDAO;
+import dev.buga.data.DepartmentRepository;
 import dev.buga.entity.Department;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DepartmentService {
-    private final GenericDAO<Department> departmentDAO;
+    private final DepartmentRepository departmentRepository;
 
-    public DepartmentService(GenericDAO<Department> departmentDAO) {
-        this.departmentDAO = departmentDAO;
+    @Autowired
+    public DepartmentService(DepartmentRepository departmentRepository) {
+        this.departmentRepository = departmentRepository;
     }
 
     public void add(Department department) {
-        departmentDAO.create(department);
+        departmentRepository.save(department);
     }
 
     public List<Department> readAll() {
-        return departmentDAO.readAll();
+        return departmentRepository.findAll();
     }
 
-    public Department readById(long id) {
-        return departmentDAO.read(id);
+    public Optional<Department> readById(long id) {
+        return departmentRepository.findById(id);
     }
 
     public void update(Department department) {
-        departmentDAO.update(department);
+        departmentRepository.save(department);
     }
 
     @Transactional
     public void remove(long id) {
-        Department department = readById(id);
-        EntityManager entityManager = departmentDAO.getEntityManager();
+        Optional<Department> optionalDepartment = departmentRepository.findById(id);
 
-        if (department != null) {
-            String sql = "UPDATE employee SET department_id = null WHERE department_id = :departmentId";
-            entityManager.createNativeQuery(sql)
-                    .setParameter("departmentId", id)
-                    .executeUpdate();
-
-            departmentDAO.delete(id);
+        if (optionalDepartment.isPresent()) {
+            Department department = optionalDepartment.get();
+            departmentRepository.removeDepartment(department.getId());
         }
+
     }
 }
 

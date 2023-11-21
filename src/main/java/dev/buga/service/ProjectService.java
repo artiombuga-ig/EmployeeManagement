@@ -1,53 +1,47 @@
 package dev.buga.service;
 
-import dev.buga.data.GenericDAO;
+import dev.buga.data.ProjectRepository;
 import dev.buga.entity.Project;
-import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.event.TextEvent;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class ProjectService {
-    private final GenericDAO<Project> projectDAO;
+    private final ProjectRepository projectRepository;
 
-    public ProjectService(GenericDAO<Project> projectDAO) {
-        this.projectDAO = projectDAO;
+    @Autowired
+    public ProjectService(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
     }
 
     public List<Project> readAll() {
-        return projectDAO.readAll();
+        return projectRepository.findAll();
     }
 
-    public Project readById(long id) {
-        return projectDAO.read(id);
+    public Optional<Project> readById(long id) {
+        return projectRepository.findById(id);
     }
 
     public void update(Project project) {
-        projectDAO.update(project);
+        projectRepository.save(project);
     }
 
     public void add(Project project) {
-        projectDAO.create(project);
+        projectRepository.save(project);
     }
 
     public void remove(long id) {
-        Project project = readById(id);
-        EntityManager entityManager = projectDAO.getEntityManager();
+        Optional<Project> optionalProject = projectRepository.findById(id);
 
-        if (project != null) {
-
-            String sql = "DELETE FROM employee_project WHERE project_id = :projectId";
-            entityManager.createNativeQuery(sql)
-                    .setParameter("projectId", id)
-                    .executeUpdate();
-
-            projectDAO.delete(id);
+        if (optionalProject.isPresent()) {
+            Project project = optionalProject.get();
+            project.removeEmployeeAssociations();
+            projectRepository.delete(project);
         }
     }
 }

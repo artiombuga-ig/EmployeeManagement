@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PreRemove;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,13 @@ public class Project {
                 "name = " + name + ", " +
                 "startDate = " + startDate + ", " +
                 "endDate = " + endDate + ")";
+    }
+
+    @PreRemove
+    public void removeEmployeeAssociations() {
+        for (Employee employee : this.employees) {
+            employee.getProjects().remove(this);
+        }
     }
 
 }

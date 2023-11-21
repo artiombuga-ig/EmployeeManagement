@@ -1,52 +1,46 @@
 package dev.buga.service;
 
-import dev.buga.data.GenericDAO;
+import dev.buga.data.EmployeeRepository;
 import dev.buga.entity.Employee;
-import dev.buga.entity.Project;
-import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
-    private final GenericDAO<Employee> employeeDAO;
+    private final EmployeeRepository employeeRepository;
 
-    public EmployeeService(GenericDAO<Employee> employeeDAO) {
-        this.employeeDAO = employeeDAO;
+    @Autowired
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
     }
 
     public void add(Employee employee) {
-        employeeDAO.create(employee);
+        employeeRepository.save(employee);
     }
 
     public List<Employee> readAll() {
-        return employeeDAO.readAll();
+        return employeeRepository.findAll();
     }
 
-    public Employee readById(Long id) {
-        return employeeDAO.read(id);
+    public Optional<Employee> readById(Long id) {
+        return employeeRepository.findById(id);
     }
 
     public void update(Employee employee) {
-        employeeDAO.update(employee);
+        employeeRepository.save(employee);
     }
 
-    public void remove(Long id) {
-        Employee employee = readById(id);
-        EntityManager entityManager = employeeDAO.getEntityManager();
+    @Transactional
+    public void remove(long id) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
 
-        if (employee != null) {
-
-        String sql = "UPDATE department SET manager_id = null WHERE manager_id = :employeeId";
-        entityManager.createNativeQuery(sql)
-                .setParameter("employeeId", id)
-                .executeUpdate();
-
-        employeeDAO.delete(id);
+        if (optionalEmployee.isPresent()) {
+            Employee employee = optionalEmployee.get();
+            employeeRepository.removeEmployee(employee.getId());
         }
     }
 }
